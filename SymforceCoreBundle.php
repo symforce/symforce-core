@@ -18,6 +18,7 @@ class SymforceCoreBundle extends Bundle
     public function registerCommands(Application $_application)
     {
         $_application->add(new Command\DumpCommand());
+        $_application->add(new Command\ServerRunCommand());
 
         $_application->add(new Command\DoctrineCommandSchemaCreate());
         $_application->add(new Command\DoctrineCommandSchemaUpdate());
