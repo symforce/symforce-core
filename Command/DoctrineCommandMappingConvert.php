@@ -6,8 +6,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * ./app/console doctrine:mapping:convert --from-database --namespace="App\ForumBundle\Entity\\" annotation ./src
- * ./app/console doctrine:generate:entities  AppForumBundle
+ * ./app/console doctrine:mapping:convert --from-database --namespace="App\TestBundle\Entity\\" annotation ./src
+ * ./app/console doctrine:generate:entities AppTestBundle
  */
 
 class DoctrineCommandMappingConvert extends \Doctrine\Bundle\DoctrineBundle\Command\Proxy\ConvertMappingDoctrineCommand
