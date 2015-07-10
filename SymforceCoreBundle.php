@@ -17,7 +17,9 @@ class SymforceCoreBundle extends Bundle
      */
     public function registerCommands(Application $_application)
     {
+        $_application->add(new Command\TestCommand());
         $_application->add(new Command\DumpCommand());
+        $_application->add(new Command\AssetsCommand());
         $_application->add(new Command\ServerRunCommand());
 
         $_application->add(new Command\DoctrineCommandSchemaCreate());
@@ -30,6 +32,9 @@ class SymforceCoreBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
+
+        $container->addCompilerPass(new Compiler\AnnotationPass());
+        $container->addCompilerPass(new Compiler\AssetsPass());
     }
     
 }

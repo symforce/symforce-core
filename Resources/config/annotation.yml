@@ -1,0 +1,20 @@
+services:
+    sf.annotation.factory:
+        class: Symforce\CoreBundle\Annotation\SymforceAnnotationFactory
+        calls:
+            # - [ setContainer, [ "@service_container"] ]
+
+    sf.annotation.test:
+        class:  Symforce\CoreBundle\Annotation\Compiler\AnnotationClassCompiler
+        tags:
+            - { name: "sf.annotation.class_compiler", alias: "test" }
+
+    sf.annotation.test.property:
+        class:  Symforce\CoreBundle\Annotation\Compiler\AnnotationPropertyCompiler
+        tags:
+            - { name: "sf.annotation.property_compiler", alias: "property", parent:"test", value: true }
+
+    sf.annotation.test1:
+        class:  Symforce\CoreBundle\Annotation\Compiler\AnnotationClassCompiler
+        tags:
+            - { name: "sf.annotation.class_compiler", alias: "test1" }

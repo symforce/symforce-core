@@ -1,8 +1,8 @@
 <?php
 
-namespace Symforce\CoreBundle;
+namespace Symforce\CoreBundle\PhpHelper ;
 
-trait SymforceCoreDev {
+trait SymforceCoreDevTrait {
 
     /**
      * @param string $namespace

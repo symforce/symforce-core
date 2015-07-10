@@ -13,14 +13,12 @@ use Symfony\Component\Yaml\Parser as YamlParser ;
 
 class SymforceCoreExtension extends Extension
 {
-    /**
-     *
-     * @var YamlParser 
-     */
-    private $yamlParser ;
-    
     public function load(array $configs, ContainerBuilder $container)
     {
+
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('annotation.yml');
+        $loader->load('assets.yml');
 
     }
 
