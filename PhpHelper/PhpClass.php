@@ -159,7 +159,7 @@ class PhpClass extends \CG\Generator\PhpClass {
             ->write('class '.  $shortName ) ;
            
         if( $this->getParentClassName() ) {
-            $writer->write(' extends \\' . $this->getParentClassName() ) ;
+            $writer->write(' extends \\' . ltrim($this->getParentClassName(), '\\') ) ;
         }
        
         $writer->writeln(" {\n")
