@@ -1,20 +1,18 @@
 services:
-    sf.annotation.factory:
-        class: Symforce\CoreBundle\Annotation\SymforceAnnotationFactory
-        calls:
-            # - [ setContainer, [ "@service_container"] ]
+    sf.compiler.annotation :
+        class: Symforce\CoreBundle\Annotation\SymforceAnnotationCompiler
 
     sf.annotation.test:
-        class:  Symforce\CoreBundle\Annotation\Compiler\AnnotationClassCompiler
+        class:  Symforce\CoreBundle\Annotation\Builder\AnnotationClassBuilder
         tags:
-            - { name: "sf.annotation.class_compiler", alias: "test" }
+            - { name: "sf.annotation.class_builder", alias: "test" }
 
     sf.annotation.test.property:
-        class:  Symforce\CoreBundle\Annotation\Compiler\AnnotationPropertyCompiler
+        class:  Symforce\CoreBundle\Annotation\Builder\AnnotationPropertyBuilder
         tags:
-            - { name: "sf.annotation.property_compiler", alias: "property", parent:"test", value: true }
+            - { name: "sf.annotation.property_builder", alias: "property", parent:"test", value: true }
 
-    sf.annotation.test1:
-        class:  Symforce\CoreBundle\Annotation\Compiler\AnnotationClassCompiler
+    sf.annotation.test_apple:
+        class:  Symforce\CoreBundle\Annotation\Builder\AnnotationClassBuilder
         tags:
-            - { name: "sf.annotation.class_compiler", alias: "test1" }
+            - { name: "sf.annotation.class_builder", alias: "test_apple" }

@@ -35,6 +35,7 @@ class SymforceCoreBundle extends Bundle
 
         $container->addCompilerPass(new Compiler\AnnotationPass());
         $container->addCompilerPass(new Compiler\AssetsPass());
+        $container->addCompilerPass(new Compiler\EventPass());
     }
     
 }

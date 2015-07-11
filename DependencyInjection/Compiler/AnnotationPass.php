@@ -12,10 +12,12 @@ class AnnotationPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
 
-        $definition = $container->getDefinition('sf.annotation.factory') ;
-        
-        $tagName = 'sf.annotation.class_compiler' ;
-        $class_maps = array() ;
+        $definition = $container->getDefinition('sf.compiler.annotation') ;
+
+        $ignore_name_list   = array('compiler', 'builder', 'annotation', 'property' ) ;
+
+        $tagName = 'sf.annotation.class_builder' ;
+        $hash   = array() ;
         foreach ($container->findTaggedServiceIds($tagName) as $id => $attributes) {
             if (isset($attributes[0])) {
                 $attributes = $attributes[0];
@@ -24,18 +26,21 @@ class AnnotationPass implements CompilerPassInterface
             if (!isset($attributes['alias']) ) {
                 throw new \Exception( sprintf("service(%s) with tags(name=%s) require alias", $id, $tagName ) ) ;
             }
-            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isIdentifier($attributes['alias']) ){
-                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) alias invalid", $id, $tagName, $attributes['alias']) ) ;
+            $name =  $attributes['alias'] ;
+            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isClassName($name) || in_array($name, $ignore_name_list) ) {
+                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) alias invalid", $id, $tagName, $name) ) ;
             }
-            $class_compiler->addMethodCall('setName', array($attributes['alias']) ) ;
-
-            $class_maps[ $attributes['alias'] ] = array(
-                'name'  => $attributes['alias'] ,
+            if( isset($hash[ $name ]) ) {
+                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) conflict with service(%s)", $id, $tagName, $name, $hash[ $name ]['id'] ) ) ;
+            }
+            $hash[ $name ] = array(
+                'name'  => $name ,
                 'id'  => $id ,
                 'parent'  => isset($attributes['parent']) ? $attributes['parent'] : null ,
                 'properties'  => array() ,
                 'value_property_name'  => null ,
             ) ;
+            $class_compiler->addMethodCall('setName', array($name) ) ;
 
             if ( isset($attributes['parent']) ) {
                 $class_compiler->addMethodCall('setParentAnnotationName', array($attributes['parent']) ) ;
@@ -49,16 +54,19 @@ class AnnotationPass implements CompilerPassInterface
             $definition->addMethodCall('addAnnotationClassCompiler', array(new Reference($id)));
         }
 
-        foreach($class_maps as $class_name => $class_object ) {
-            if( $class_object['parent'] && !isset( $class_maps[ $class_object['parent']  ] ) ) {
-                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) parent not exists", $class_object['id'], $tagName, $class_object['parent'], $attributes['alias']) ) ;
+        /**
+         * @fixme check loop ref
+         */
+        foreach($hash as $name => $object ) {
+            if( $object['parent'] && !isset( $hash[ $object['parent']  ] ) ) {
+                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) parent not exists", $object['id'], $tagName, $name, $object['parent']) ) ;
             }
         }
 
-        $valid_parents  = join(',', array_keys($class_maps) )  ;
+        $valid_parents  = join(',', array_keys($hash) )  ;
         $valid_types  = array('bool', 'integer', 'string', 'array', 'mixed')  ;
 
-        $tagName = 'sf.annotation.property_compiler' ;
+        $tagName = 'sf.annotation.property_builder' ;
         foreach ($container->findTaggedServiceIds($tagName) as $id => $attributes) {
             if (isset($attributes[0])) {
                 $attributes = $attributes[0];
@@ -68,39 +76,39 @@ class AnnotationPass implements CompilerPassInterface
             if (!isset($attributes['alias']) ) {
                 throw new \Exception( sprintf("service(%s) with tags(name=%s) require alias", $id, $tagName ) ) ;
             }
-
-            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isIdentifier($attributes['alias']) ){
-                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) alias invalid", $id, $tagName, $attributes['alias']) ) ;
+            $name =  $attributes['alias'] ;
+            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isPropertyName($name) ){
+                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) alias invalid", $id, $tagName, $name) ) ;
+            }
+            if (!isset($attributes['parent'])) {
+                throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s) require parent", $id, $tagName, $name) ) ;
+            }
+            $parent_name = $attributes['parent'] ;
+            if ( !isset($hash[$parent_name]) ) {
+                throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) parent must be one of(%s)", $id, $tagName, $name, $parent_name , $valid_parents ) ) ;
             }
 
-            if( isset($class_maps[ $attributes['parent'] ]['properties'][ $attributes['alias']  ]) ){
-                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) conflict with service(%s)", $id, $tagName, $attributes['alias'], $class_maps[ $attributes['parent'] ]['properties'][ $attributes['alias'] ] ) ) ;
+            if( isset($hash[ $parent_name ]['properties'][ $name ]) ){
+                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) conflict with service(%s)", $id, $tagName, $name, $hash[ $parent_name ]['properties'][ $name ] ) ) ;
             }
-            $class_maps[ $attributes['parent'] ]['properties'][ $attributes['alias']  ] = $id ;
+            $hash[ $parent_name ]['properties'][ $name ] = $id ;
 
-            $property_compiler->addMethodCall('setName',  array($attributes['alias']) ) ;
+            $property_compiler->addMethodCall('setName',  array($name) ) ;
+            $property_compiler->addMethodCall('setAnnotationName',  array($parent_name)) ;
 
             if ( isset($attributes['type']) ) {
                 if( in_array($attributes['type'], $valid_types ) ) {
-                    throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s, type=%s) type must be one of(%s)", $id, $tagName, $attributes['alias'], $attributes['type'], join(',', $valid_types) ) ) ;
+                    throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s, type=%s) type must be one of(%s)", $id, $tagName, $name, $parent_name, $attributes['type'], join(',', $valid_types) ) ) ;
                 } else {
                     $property_compiler->addMethodCall('setType',  array($attributes['type']) ) ;
                 }
             }
 
-            if (!isset($attributes['parent'])) {
-                throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s) require parent", $id, $tagName, $attributes['alias']) ) ;
-            }
-            if ( !isset($class_maps[ $attributes['parent'] ]) ) {
-                throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) parent must be one of(%s)", $id, $tagName, $attributes['alias'], $attributes['parent'] , $valid_parents ) ) ;
-            }
-            $property_compiler->addMethodCall('setAnnotationName',  array($attributes['parent'])) ;
-
             if (isset($attributes['value'])) {
-                if( null !== $class_maps[ $attributes['parent'] ]['value_property_name'] ) {
-                    $_value_property_name = $class_maps[ $attributes['parent'] ]['value_property_name']  ;
-                    throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) conflict with service(%s) value", $id, $tagName, $attributes['alias'], $attributes['parent'] ,
-                        $class_maps[ $attributes['parent'] ]['properties'][ $_value_property_name ] ) ) ;
+                if( null !== $hash[ $parent_name ]['value_property_name'] ) {
+                    $_value_property_name = $hash[ $parent_name ]['value_property_name']  ;
+                    throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) conflict with service(%s) value", $id, $tagName, $name , $parent_name ,
+                        $hash[ $parent_name ]['properties'][ $_value_property_name ] ) ) ;
                 }
                 $class_maps[ $attributes['parent'] ]['value_property_name'] = $attributes['alias'] ;
                 $property_compiler->addMethodCall('setIsValueProperty',  array(true)) ;
@@ -109,7 +117,7 @@ class AnnotationPass implements CompilerPassInterface
             $definition->addMethodCall('addAnnotationPropertyCompiler',  array(new Reference($id)) ) ;
         }
 
-        $definition->addMethodCall('buildAnnotations') ;
+        $definition->addMethodCall('compileAnnotations') ;
 
     }
 

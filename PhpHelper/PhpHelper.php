@@ -5,12 +5,26 @@ namespace Symforce\CoreBundle\PhpHelper ;
 
 class PhpHelper {
 
+    static public function isKeywords($key) {
+        return in_array($key, array('__halt_compiler', 'abstract', 'and', 'array', 'as', 'break', 'callable', 'case', 'catch', 'class', 'clone', 'const', 'continue', 'declare', 'default', 'die', 'do', 'echo', 'else', 'elseif', 'empty', 'enddeclare', 'endfor', 'endforeach', 'endif', 'endswitch', 'endwhile', 'eval', 'exit', 'extends', 'final', 'for', 'foreach', 'function', 'global', 'goto', 'if', 'implements', 'include', 'include_once', 'instanceof', 'insteadof', 'interface', 'isset', 'list', 'namespace', 'new', 'or', 'print', 'private', 'protected', 'public', 'require', 'require_once', 'return', 'static', 'switch', 'throw', 'trait', 'try', 'unset', 'use', 'var', 'while', 'xor'));
+    }
+
     static public function isVariableName( $name ) {
         return preg_match('/^[a-z\_][a-z0-9\_]*[a-z0-9]$/', $name ) ;
     }
 
     static public function isPropertyName( $name ) {
+        if( self::isKeywords($name) ) {
+            return false ;
+        }
         return preg_match('/^[a-z\_][a-z0-9\_]*[a-z0-9]$/', $name) ;
+    }
+
+    static public function isClassName( $name ) {
+        if( self::isKeywords($name) ) {
+            return false ;
+        }
+        return self::isIdentifier($name) ;
     }
 
     static public function isIdentifier( $id ) {

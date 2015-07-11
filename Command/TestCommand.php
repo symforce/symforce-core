@@ -28,8 +28,9 @@ class TestCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $factor  = $this->getContainer()->get('sf.annotation.factory');
-        $factor  = $this->getContainer()->get('sf.assets.factory');
-        \Dev::dump($factor) ;
+        $compiler  = $this->getContainer()->get('sf.compiler.annotation');
+        $compiler  = $this->getContainer()->get('sf.compiler.assets');
+        $compiler  = $this->getContainer()->get('sf.compiler.event');
+        \Dev::dump($compiler) ;
     }
 }

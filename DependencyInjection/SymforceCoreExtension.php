@@ -19,6 +19,7 @@ class SymforceCoreExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('annotation.yml');
         $loader->load('assets.yml');
+        $loader->load('event.yml');
 
     }
 

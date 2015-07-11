@@ -1,8 +1,8 @@
 <?php
 
-namespace Symforce\CoreBundle\Annotation\Compiler;
+namespace Symforce\CoreBundle\Annotation\Builder ;
 
-final class AnnotationPropertyCompiler {
+final class AnnotationPropertyBuilder {
 
     /**
      * @var string

@@ -1,6 +1,6 @@
 services:
-    sf.assets.factory:
-        class: Symforce\CoreBundle\Assets\SymforceAssetsFactory
+    sf.compiler.assets:
+        class: Symforce\CoreBundle\Assets\SymforceAssetsCompiler
 
     sf.assets.bootstrap_colorpicker:
         class: Symforce\CoreBundle\Assets\SymforceAssetsResource

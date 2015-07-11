@@ -78,12 +78,12 @@ EOT
 
 
         /**
-         * @var $factory \Symforce\CoreBundle\Assets\SymforceAssetsFactory
+         * @var $factory \Symforce\CoreBundle\Assets\SymforceAssetsCompiler
          */
-        $factory = $this->getContainer()->get('sf.assets.factory') ;
+        $compiler = $this->getContainer()->get('sf.compiler.assets') ;
 
 
-        $output->writeln(sprintf('Installing assets from <comment>%s</comment>', $factory->getTagName() ));
+        $output->writeln(sprintf('Installing assets from <comment>%s</comment>', $compiler->getTagName() ));
 
 
         $twig_parser  = $this->getContainer()->get('templating.name_parser');
@@ -93,7 +93,7 @@ EOT
         /**
          * @var $assets_resource \Symforce\CoreBundle\Assets\SymforceAssetsResource
          */
-        foreach($factory->getResources() as $service_id => $assets_resource ) {
+        foreach($compiler->getResources() as $service_id => $assets_resource ) {
             if( !in_array( $assets_resource->getTarget(), $assets_target_dirs) ) {
                 throw new \Exception( sprintf("service(%s) with tags(name=%s, target=%s) target must be one of(%s)", $service_id, $factory->getTagName(), $assets_resource->getTarget(), join(',', $assets_target_dirs)));
             }

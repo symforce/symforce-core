@@ -12,7 +12,7 @@ class AssetsPass implements CompilerPassInterface
     public function process(ContainerBuilder $container)
     {
 
-        $definition = $container->getDefinition('sf.assets.factory') ;
+        $definition = $container->getDefinition('sf.compiler.assets') ;
 
         $tagName = 'sf.assets.resources' ;
         $definition->addMethodCall('setTagName', array($tagName) ) ;
@@ -37,7 +37,6 @@ class AssetsPass implements CompilerPassInterface
             if( isset($attributes['extension']) ) {
                 $_def->addMethodCall('setExtension', array($attributes['extension']) ) ;
             }
-
 
             $definition->addMethodCall('addAssetsResource', array($id, new Reference($id))) ;
         }

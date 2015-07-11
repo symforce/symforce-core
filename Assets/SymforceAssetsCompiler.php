@@ -2,7 +2,7 @@
 
 namespace Symforce\CoreBundle\Assets;
 
-class SymforceAssetsFactory {
+class SymforceAssetsCompiler {
 
     private $_tagName ;
     private $_resources = array() ;
