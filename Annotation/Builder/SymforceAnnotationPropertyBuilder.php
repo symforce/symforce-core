@@ -2,7 +2,7 @@
 
 namespace Symforce\CoreBundle\Annotation\Builder ;
 
-final class AnnotationPropertyBuilder {
+final class SymforceAnnotationPropertyBuilder {
 
     /**
      * @var string

@@ -4,8 +4,8 @@ namespace Symforce\CoreBundle\Annotation ;
 
 use Symfony\Component\DependencyInjection\ContainerInterface ;
 
-use Symforce\CoreBundle\Annotation\Builder\AnnotationClassBuilder  ;
-use Symforce\CoreBundle\Annotation\Builder\AnnotationPropertyBuilder  ;
+use Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationBuilder  ;
+use Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationPropertyBuilder  ;
 
 class SymforceAnnotationCompiler {
 
@@ -20,7 +20,7 @@ class SymforceAnnotationCompiler {
 
     private $properties = array() ;
 
-    public function addAnnotationClassCompiler(AnnotationClassBuilder  $builder) {
+    public function addAnnotationClassCompiler(SymforceAnnotationBuilder  $builder) {
         if( $this->_bootstrap ) {
             return ;
         }
@@ -28,7 +28,7 @@ class SymforceAnnotationCompiler {
         $this->builders[ $name ] = $builder ;
     }
 
-    public function addAnnotationPropertyCompiler(AnnotationPropertyBuilder  $builder) {
+    public function addAnnotationPropertyCompiler(SymforceAnnotationPropertyBuilder  $builder) {
         if( $this->_bootstrap ) {
             return ;
         }
@@ -46,7 +46,7 @@ class SymforceAnnotationCompiler {
         $base_parent_class  = sprintf('%s\\SymforceAbstractAnnotation', __NAMESPACE__) ;
 
         /**
-         * @var $class_compiler AnnotationClassBuilder
+         * @var $class_compiler SymforceAnnotationBuilder
          */
         foreach($this->builders as $annotation_name => $class_builder ) {
 
@@ -73,7 +73,7 @@ class SymforceAnnotationCompiler {
 
             $value_property_name = null ;
             /**
-             * @var $property_compiler AnnotationPropertyBuilder
+             * @var $property_compiler SymforceAnnotationPropertyBuilder
              */
             if( isset($this->properties[ $annotation_name ]) ) foreach($this->properties[ $annotation_name ] as $property_name => $property_builder) {
                 $type = $property_builder->getType() ;

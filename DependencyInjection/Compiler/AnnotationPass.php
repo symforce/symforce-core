@@ -16,7 +16,7 @@ class AnnotationPass implements CompilerPassInterface
 
         $ignore_name_list   = array('compiler', 'builder', 'annotation', 'property' ) ;
 
-        $tagName = 'sf.annotation.class_builder' ;
+        $tagName = 'sf.annotation.builder' ;
         $hash   = array() ;
         foreach ($container->findTaggedServiceIds($tagName) as $id => $attributes) {
             if (isset($attributes[0])) {

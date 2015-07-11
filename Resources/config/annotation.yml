@@ -3,16 +3,16 @@ services:
         class: Symforce\CoreBundle\Annotation\SymforceAnnotationCompiler
 
     sf.annotation.test:
-        class:  Symforce\CoreBundle\Annotation\Builder\AnnotationClassBuilder
+        class:  Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationBuilder
         tags:
-            - { name: "sf.annotation.class_builder", alias: "test" }
+            - { name: "sf.annotation.builder", alias: "test" }
 
     sf.annotation.test.property:
-        class:  Symforce\CoreBundle\Annotation\Builder\AnnotationPropertyBuilder
+        class:  Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationPropertyBuilder
         tags:
             - { name: "sf.annotation.property_builder", alias: "property", parent:"test", value: true }
 
     sf.annotation.test_apple:
-        class:  Symforce\CoreBundle\Annotation\Builder\AnnotationClassBuilder
+        class:  Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationBuilder
         tags:
-            - { name: "sf.annotation.class_builder", alias: "test_apple" }
+            - { name: "sf.annotation.builder", alias: "test_apple" }

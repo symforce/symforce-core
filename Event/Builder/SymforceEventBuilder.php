@@ -1,9 +1,9 @@
 <?php
 
-namespace Symforce\CoreBundle\Event;
+namespace Symforce\CoreBundle\Event\Builder ;
 
 
-class SymforceEventBuilder {
+final class SymforceEventBuilder {
 
     /**
      * @var integer
@@ -20,7 +20,6 @@ class SymforceEventBuilder {
      * @var string
      */
     private $parent_name ;
-
 
     /**
      * @return string

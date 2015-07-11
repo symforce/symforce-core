@@ -42,6 +42,7 @@ class EventPass implements CompilerPassInterface
                 'id'    => $id ,
                 'index'    => $index ,
                 'name'  => $name ,
+                'args'  => array() ,
                 'parent'  => isset($attributes['parent']) ? $attributes['parent'] : null ,
             ) ;
             $_def->addMethodCall('setId', array($index) ) ;
@@ -60,6 +61,49 @@ class EventPass implements CompilerPassInterface
             if( $object['parent'] && !isset( $hash[ $object['parent'] ] ) ) {
                 throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) parent not exists", $object['id'], $tagName, $name, $object['parent']) ) ;
             }
+        }
+
+        $valid_parents  = join(',', array_keys($hash) )  ;
+
+        $tagName = 'sf.event.args_builder' ;
+        foreach ($container->findTaggedServiceIds($tagName) as $id => $attributes) {
+            if (isset($attributes[0])) {
+                $attributes = $attributes[0];
+            }
+            $property_compiler = $container->getDefinition($id) ;
+
+            if (!isset($attributes['alias']) ) {
+                throw new \Exception( sprintf("service(%s) with tags(name=%s) require alias", $id, $tagName ) ) ;
+            }
+            $name =  $attributes['alias'] ;
+            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isPropertyName($name) ){
+                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) alias invalid", $id, $tagName, $name) ) ;
+            }
+            if (!isset($attributes['parent'])) {
+                throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s) require parent", $id, $tagName, $name) ) ;
+            }
+            $parent_name = $attributes['parent'] ;
+            if ( !isset($hash[$parent_name]) ) {
+                throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) parent must be one of(%s)", $id, $tagName, $name, $parent_name , $valid_parents ) ) ;
+            }
+
+            if( isset($hash[ $parent_name ]['properties'][ $name ]) ){
+                throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) conflict with service(%s)", $id, $tagName, $name, $parent_name, $hash[ $parent_name ]['properties'][ $name ] ) ) ;
+            }
+            $hash[ $parent_name ]['properties'][ $name ] = $id ;
+            $property_compiler->addMethodCall('setName',  array($name) ) ;
+            $property_compiler->addMethodCall('setEventName',  array($parent_name)) ;
+
+            if (!isset($attributes['type'])) {
+                throw new \Exception( sprintf("service(%s) with tags(name=%s, alias=%s, parent=%s) require type", $id, $tagName, $name, $parent_name) ) ;
+            }
+            $property_compiler->addMethodCall('setType',  array($attributes['type'])) ;
+
+            if ( isset($attributes['value'])) {
+                $property_compiler->addMethodCall('setDefaultValue',  array($attributes['value'])) ;
+            }
+
+            $definition->addMethodCall('addEventArgumentBuilder',  array(new Reference($id)) ) ;
         }
 
         $definition->addMethodCall('compileEvents') ;
