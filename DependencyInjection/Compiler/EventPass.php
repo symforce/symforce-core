@@ -64,6 +64,7 @@ class EventPass implements CompilerPassInterface
         }
 
         $valid_parents  = join(',', array_keys($hash) )  ;
+        $ignore_property_list    = array( 'type', 'id' ) ;
 
         $tagName = 'sf.event.args_builder' ;
         foreach ($container->findTaggedServiceIds($tagName) as $id => $attributes) {
@@ -76,7 +77,7 @@ class EventPass implements CompilerPassInterface
                 throw new \Exception( sprintf("service(%s) with tags(name=%s) require alias", $id, $tagName ) ) ;
             }
             $name =  $attributes['alias'] ;
-            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isPropertyName($name) ){
+            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isPropertyName($name) || in_array($name, $ignore_property_list) ){
                 throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) alias invalid", $id, $tagName, $name) ) ;
             }
             if (!isset($attributes['parent'])) {

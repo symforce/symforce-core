@@ -46,7 +46,7 @@ class SymforceAnnotationCompiler {
         $base_parent_class  = sprintf('%s\\SymforceAbstractAnnotation', __NAMESPACE__) ;
 
         /**
-         * @var $class_compiler SymforceAnnotationBuilder
+         * @var $class_builder SymforceAnnotationBuilder
          */
         foreach($this->builders as $annotation_name => $class_builder ) {
 
@@ -73,7 +73,7 @@ class SymforceAnnotationCompiler {
 
             $value_property_name = null ;
             /**
-             * @var $property_compiler SymforceAnnotationPropertyBuilder
+             * @var $property_builder SymforceAnnotationPropertyBuilder
              */
             if( isset($this->properties[ $annotation_name ]) ) foreach($this->properties[ $annotation_name ] as $property_name => $property_builder) {
                 $type = $property_builder->getType() ;
