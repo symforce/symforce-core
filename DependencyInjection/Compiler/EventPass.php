@@ -17,7 +17,7 @@ class EventPass implements CompilerPassInterface
         $tagName = 'sf.event.builder' ;
         $definition->addMethodCall('setTagName', array($tagName) ) ;
 
-        $ignore_name_list    = array( 'event', 'builder', 'compiler' ) ;
+        $ignore_name_list    = array( 'event', 'builder', 'compiler', 'dispatcher', 'on', 'before', 'after', 'fire' ) ;
 
         $hash   = array() ;
         foreach ($container->findTaggedServiceIds($tagName) as $id => $attributes) {
@@ -64,7 +64,7 @@ class EventPass implements CompilerPassInterface
         }
 
         $valid_parents  = join(',', array_keys($hash) )  ;
-        $ignore_property_list    = array( 'type', 'id' ) ;
+        $ignore_properties_list    = array( 'type', 'id', 'on', 'before', 'after', 'event', 'dispatcher' ) ;
 
         $tagName = 'sf.event.args_builder' ;
         foreach ($container->findTaggedServiceIds($tagName) as $id => $attributes) {
@@ -77,7 +77,7 @@ class EventPass implements CompilerPassInterface
                 throw new \Exception( sprintf("service(%s) with tags(name=%s) require alias", $id, $tagName ) ) ;
             }
             $name =  $attributes['alias'] ;
-            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isPropertyName($name) || in_array($name, $ignore_property_list) ){
+            if(  !\Symforce\CoreBundle\PhpHelper\PhpHelper::isPropertyName($name) || in_array($name, $ignore_properties_list) ){
                 throw new \Exception(sprintf("service(%s) with tags(name=%s, alias=%s) alias invalid", $id, $tagName, $name) ) ;
             }
             if (!isset($attributes['parent'])) {
