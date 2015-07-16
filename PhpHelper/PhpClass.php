@@ -99,25 +99,7 @@ class PhpClass extends \CG\Generator\PhpClass {
 
     public function writeCache() {
 
-        static $_psr4_map   = null ;
-        if( null === $_psr4_map ) {
-            $_psr4_file = dirname( (new \ReflectionClass('Composer\\Autoload\\ClassLoader'))->getFileName() ) . '/autoload_psr4.php' ;
-            if( !file_exists($_psr4_file) ) {
-                throw new \Exception(sprintf("psr4 file(%s) not exits!", $_psr4_file)) ;
-            }
-            $_psr4_map   = include( $_psr4_file ) ;
-        }
-
-        $_class_file = null ;
-        foreach($_psr4_map as $_namespace => $_namespace_dir ) if( !empty($_namespace_dir) ) {
-            $_pos = strpos($this->getName(), $_namespace) ;
-            if( 0 === $_pos ) {
-                $_class_file = $_namespace_dir[0] . '/' . str_replace('\\', '/', substr( $this->getName(), strlen($_namespace) ) ) . '.php' ;
-            }
-        }
-        if( !$_class_file ) {
-            throw new \Exception(sprintf("can not resolve file for class(%s) by psr4 rule!", $this->getName())) ;
-        }
+        $_class_file    = \Symforce\CoreBundle\PhpHelper\PhpHelper::findFileByClassName($this->getName());
 
         $shortName = pathinfo($_class_file, \PATHINFO_FILENAME );
         $namespace = $this->getNamespace() ;

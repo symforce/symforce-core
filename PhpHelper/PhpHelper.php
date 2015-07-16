@@ -5,6 +5,43 @@ namespace Symforce\CoreBundle\PhpHelper ;
 
 class PhpHelper {
 
+    /**
+     * @param string $class_name
+     * @return null|string
+     * @throws \Exception
+     */
+    static public function findFileByClassName($class_name) {
+
+        static $_psr4_map   = null ;
+        if( null === $_psr4_map ) {
+            $_psr4_file = dirname( (new \ReflectionClass('Composer\\Autoload\\ClassLoader'))->getFileName() ) . '/autoload_psr4.php' ;
+            if( !file_exists($_psr4_file) ) {
+                throw new \Exception(sprintf("psr4 file(%s) not exits!", $_psr4_file)) ;
+            }
+            $_psr4_map   = include( $_psr4_file ) ;
+        }
+
+        $_class_file = null ;
+        $_class_psr4_namespace = null ;
+        foreach($_psr4_map as $_namespace => $_namespace_dir ) if( !empty($_namespace_dir) ) {
+            $_pos = strpos($class_name, $_namespace) ;
+            if( 0 === $_pos ) {
+                if( !$_class_psr4_namespace || strlen($_namespace) > strlen($_class_psr4_namespace) ) {
+                    $_class_psr4_namespace  = $_namespace ;
+                    $_class_file = $_namespace_dir[0] . '/' . str_replace('\\', '/', substr($class_name, strlen($_namespace) ) ) . '.php' ;
+                }
+            }
+        }
+        if( !$_class_file ) {
+            throw new \Exception(sprintf("can not resolve file for class(%s) by psr4 rule!", $class_name ) ) ;
+        }
+        return $_class_file ;
+    }
+
+    static public function isBaseType($type) {
+        return in_array($type, array('null', 'void', 'bool', 'boolean', 'number', 'int', 'integer', 'float', 'double', 'string', 'array', 'object', 'resource', 'callable', 'mixed' ) );
+    }
+
     static public function isConstants($const) {
         return in_array($const, array('__CLASS__', '__DIR__', '__FILE__', '__FUNCTION__', '__LINE__', '__METHOD__', '__NAMESPACE__', '__TRAIT__') );
     }
@@ -25,7 +62,7 @@ class PhpHelper {
     }
 
     static public function isClassName( $name ) {
-        if( self::isKeywords($name) ) {
+        if( self::isKeywords($name) || self::isBaseType($name) ) {
             return false ;
         }
         return self::isIdentifier($name) ;
