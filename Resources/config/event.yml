@@ -1,8 +1,3 @@
 services:
     sf.compiler.event:
         class: Symforce\CoreBundle\Event\SymforceEventCompiler
-
-    sf.event.tester:
-        class: Symforce\CoreBundle\Event\Builder\SymforceEventBuilder
-        tags:
-            - { name: "sf.event.builder", alias: as_1 }

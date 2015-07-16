@@ -1,28 +1,3 @@
 services:
     sf.compiler.assets:
         class: Symforce\CoreBundle\Assets\SymforceAssetsCompiler
-
-    sf.assets.bootstrap_colorpicker:
-        class: Symforce\CoreBundle\Assets\SymforceAssetsResource
-        tags:
-            - { name: "sf.assets.resources", path: "@SymforceAdminBundle/Resources/public/bootstrap-colorpicker/img", target: "img" }
-
-    sf.assets.bootstrap_fonts:
-        class: Symforce\CoreBundle\Assets\SymforceAssetsResource
-        tags:
-            - { name: "sf.assets.resources", path: "@SymforceAdminBundle/Resources/public/bootstrap/fonts", target: "fonts" }
-
-    sf.assets.font_awesome4:
-        class: Symforce\CoreBundle\Assets\SymforceAssetsResource
-        tags:
-            - { name: "sf.assets.resources", path: "@SymforceAdminBundle/Resources/public/font-awesome4/fonts", target: "fonts" }
-
-    sf.assets.js_tree:
-        class: Symforce\CoreBundle\Assets\SymforceAssetsResource
-        tags:
-            - { name: "sf.assets.resources", path: "@SymforceAdminBundle/Resources/public/jstree/themes/default/images", target: "css" }
-
-    sf.assets.jcrop:
-        class: Symforce\CoreBundle\Assets\SymforceAssetsResource
-        tags:
-            - { name: "sf.assets.resources", path: "@SymforceAdminBundle/Resources/public/jcrop/css/Jcrop.gif", target: "css" }
