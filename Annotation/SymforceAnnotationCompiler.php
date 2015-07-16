@@ -9,16 +9,16 @@ use Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationPropertyBuilder  ;
 
 class SymforceAnnotationCompiler {
 
-    const ANNOTATION_GROUP_NAME = 'SYMFORCE_ANNOTATION_GROUP' ;
-    const ANNOTATION_VALUE_NAME = 'SYMFORCE_ANNOTATION_VALUE_PROPERTY' ;
-
     private $_bootstrap = false ;
 
     private $_classNameCache = array() ;
 
     private $builders = array() ;
 
-    private $properties = array() ;
+    private $properties_objects = array() ;
+    private $public_properties_objects = array() ;
+
+    private $public_properties = array() ;
 
     public function addAnnotationClassCompiler(SymforceAnnotationBuilder  $builder) {
         if( $this->_bootstrap ) {
@@ -34,7 +34,18 @@ class SymforceAnnotationCompiler {
         }
         $name = $builder->getAnnotationName() ;
         $property_name = $builder->getName() ;
-        $this->properties[ $name ][ $property_name ] = $builder ;
+        if( $name ) {
+            $this->properties_objects[ $name ][ $property_name ] = $builder ;
+        } else {
+            $this->public_properties_objects[ $property_name ] = $builder ;
+        }
+    }
+
+    public function addAnnotationProperties($annotation_name, array $properties) {
+        if( $this->_bootstrap ) {
+            return ;
+        }
+        $this->public_properties[ $annotation_name ] = $properties ;
     }
 
     public function compileAnnotations(){
@@ -59,9 +70,24 @@ class SymforceAnnotationCompiler {
                 $class->setParentClassName($base_parent_class) ;
             }
 
+            $class->setConstant( SymforceAnnotationCache::ANNOTATION_NAME, $annotation_name) ;
+
             $group_name = $class_builder->getAnnotationGroupName() ;
             if( $group_name ) {
-                $class->setConstant( self::ANNOTATION_GROUP_NAME, $group_name) ;
+                $class->setConstant( SymforceAnnotationCache::ANNOTATION_GROUP_NAME, $group_name) ;
+            }
+
+            $value_property_name = $class_builder->getAnnotationValuePropertyName() ;
+            if( $value_property_name ) {
+                $class->setConstant( SymforceAnnotationCache::ANNOTATION_VALUE_NAME, $value_property_name) ;
+            }
+
+            if( $class_builder->getAnnotationValueAsKey() ) {
+                $class->setConstant( SymforceAnnotationCache::ANNOTATION_VALUE_AS_KEY, 1 ) ;
+            }
+
+            if( $class_builder->getAnnotationValueNotNull() ) {
+                $class->setConstant( SymforceAnnotationCache::ANNOTATION_VALUE_NOT_NULL, 1 ) ;
             }
 
             $doc    = sprintf(" * @Annotation") ;
@@ -72,15 +98,26 @@ class SymforceAnnotationCompiler {
             $class->setDocblock( $doc ) ;
 
             $value_property_name = null ;
+
             /**
              * @var $property_builder SymforceAnnotationPropertyBuilder
              */
-            if( isset($this->properties[ $annotation_name ]) ) foreach($this->properties[ $annotation_name ] as $property_name => $property_builder) {
-                $type = $property_builder->getType() ;
-                if( !$type ) $type = 'string' ;
-                $class->addProperty( $property_name, null, $type,  false, 'public'  );
-                if( $property_builder->getIsValueProperty() ) {
-                    $class->setConstant( self::ANNOTATION_VALUE_NAME, $property_name ) ;
+            if( isset($this->properties_objects[ $annotation_name ]) ) {
+                foreach($this->properties_objects[ $annotation_name ] as $property_name => $property_builder) {
+                    $type = $property_builder->getType() ;
+                    if( !$type ) $type = 'string' ;
+                    $class->addProperty( $property_name, null, $type,  false, 'public'  );
+                }
+            }
+
+            if( isset($this->public_properties[ $annotation_name ]) ) {
+                foreach($this->public_properties[ $annotation_name ] as $property_name ) {
+                    if( !$class->hasProperty($property_name) ) {
+                        $property_builder = $this->public_properties_objects[ $property_name ] ;
+                        $type = $property_builder->getType() ;
+                        if( !$type ) $type = 'string' ;
+                        $class->addProperty( $property_name, null, $type,  false, 'public' ) ;
+                    }
                 }
             }
 

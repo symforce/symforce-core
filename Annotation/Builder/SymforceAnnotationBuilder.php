@@ -24,6 +24,12 @@ final class SymforceAnnotationBuilder {
      */
     private $annotation_target ;
 
+    private $annotation_value_property_name ;
+
+    private $annotation_value_as_key ;
+
+    private $annotation_value_not_null ;
+
     /**
      * @return string
      */
@@ -91,5 +97,35 @@ final class SymforceAnnotationBuilder {
         if (null === $this->annotation_target) {
             $this->annotation_target = $target;
         }
+    }
+
+    public function setAnnotationValuePropertyName($name) {
+        if( null === $this->annotation_value_property_name ) {
+            $this->annotation_value_property_name = $name ;
+        }
+    }
+
+    public function getAnnotationValuePropertyName(){
+        return $this->annotation_value_property_name ;
+    }
+
+    public function setAnnotationValueAsKey($value) {
+        if( null === $this->annotation_value_as_key ) {
+            $this->annotation_value_as_key = $value ;
+        }
+    }
+
+    public function getAnnotationValueAsKey(){
+        return $this->annotation_value_as_key ;
+    }
+
+    public function setAnnotationValueNotNull($value) {
+        if( null === $this->annotation_value_not_null ) {
+            $this->annotation_value_not_null = $value ;
+        }
+    }
+
+    public function getAnnotationValueNotNull(){
+        return $this->annotation_value_not_null ;
     }
 }

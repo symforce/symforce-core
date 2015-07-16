@@ -39,7 +39,10 @@ class PhpHelper {
     }
 
     static public function isBaseType($type) {
-        return in_array($type, array('null', 'void', 'bool', 'boolean', 'number', 'int', 'integer', 'float', 'double', 'string', 'array', 'object', 'resource', 'callable', 'mixed' ) );
+        return in_array( strtolower($type), array(
+            'null', 'void',
+            'bool', 'boolean',  'number', 'int', 'integer', 'float', 'double', 'string',
+            'array', 'object', 'resource', 'callable', 'mixed' ) );
     }
 
     static public function isConstants($const) {
@@ -48,6 +51,19 @@ class PhpHelper {
 
     static public function isKeywords($key) {
         return in_array($key, array('__halt_compiler', 'abstract', 'and', 'array', 'as', 'break', 'callable', 'case', 'catch', 'class', 'clone', 'const', 'continue', 'declare', 'default', 'die', 'do', 'echo', 'else', 'elseif', 'empty', 'enddeclare', 'endfor', 'endforeach', 'endif', 'endswitch', 'endwhile', 'eval', 'exit', 'extends', 'final', 'for', 'foreach', 'function', 'global', 'goto', 'if', 'implements', 'include', 'include_once', 'instanceof', 'insteadof', 'interface', 'isset', 'list', 'namespace', 'new', 'or', 'print', 'private', 'protected', 'public', 'require', 'require_once', 'return', 'static', 'switch', 'throw', 'trait', 'try', 'unset', 'use', 'var', 'while', 'xor'));
+    }
+
+    static public function isSQLKeywords($key) {
+        return in_array( strtolower($key), array(
+            'database' , 'table' , 'view',
+            'drop' , 'create' , 'alter' , 'default',
+            'primary', 'foreign', 'key', 'index', 'sequence', 'auto', 'increment',
+            'select' ,  'update' , 'delete',
+            'into', 'as',  'join' , 'from' , 'union' ,  'with',
+            'left', 'right' , 'inner',
+            'where' , 'not', 'in' , 'null' , 'values',
+            'group', 'by', 'having', 'order', 'desc', 'asc', 'limit' ,
+        )) ;
     }
 
     static public function isVariableName( $name ) {

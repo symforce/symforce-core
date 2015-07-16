@@ -20,11 +20,6 @@ final class SymforceAnnotationPropertyBuilder {
     private $type ;
 
     /**
-     * @var string
-     */
-    private $is_value_property ;
-
-    /**
      * @return string
      */
     public function getName()
@@ -76,13 +71,4 @@ final class SymforceAnnotationPropertyBuilder {
          }
     }
 
-    public function setIsValueProperty( $value ){
-        if( null === $this->is_value_property ) {
-            $this->is_value_property = $value ;
-        }
-    }
-
-    public function getIsValueProperty(){
-        return $this->is_value_property ;
-    }
 }
