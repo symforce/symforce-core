@@ -221,7 +221,7 @@ class PhpClass extends \CG\Generator\PhpClass {
                 foreach( $method->getParameters() as $i => $p) {
                     if( $p->getType() ) {
                         if( in_array( $p->getType(), array('mixed') ) ) {
-                            $writer->write( '/** @var ' . $p->getType() . ' */') ;
+                            $writer->write( '/** @var ' . $p->getType() . ' */ ') ;
                         } else {
                             $writer->write(  $p->getType() . ' ') ;
                         }
@@ -230,7 +230,7 @@ class PhpClass extends \CG\Generator\PhpClass {
                         $writer->write(' & ') ;
                     }
                     $writer
-                            ->write(' $')
+                            ->write('$')
                             ->write( $p->getName() )
                             ;
                     if( $p->hasDefaultValue() ) {
