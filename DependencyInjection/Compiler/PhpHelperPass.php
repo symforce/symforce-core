@@ -7,26 +7,23 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 
-class AnnotationPass implements CompilerPassInterface
+class PhpHelperPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
 
-        $compiler = new \Symforce\CoreBundle\Annotation\SymforceAnnotationCompiler();
+        $compiler = new \Symforce\CoreBundle\Dev\Compiler\SymforceCoreDevCompiler() ;
+
         foreach ($container->findTaggedServiceIds($compiler::TAG_NAME) as $id => $attributes) {
             if (isset($attributes[0])) {
                 $attributes = $attributes[0];
             }
-            $compiler->addAnnotationClassCompiler($id, $attributes) ;
+
+            $compiler->addDevBuilder($id, $attributes);
         }
 
-        foreach ($container->findTaggedServiceIds($compiler::_TAG_NAME) as $id => $attributes) {
-            if (isset($attributes[0])) {
-                $attributes = $attributes[0];
-            }
-            $compiler->addAnnotationPropertyCompiler($id, $attributes) ;
-        }
-        $compiler->compileAnnotations();
+        $compiler->compile( $container->getParameter('kernel.root_dir')) ;
+
     }
 
 }

@@ -11,6 +11,11 @@ final class SymforceEventBuilder {
     private $id ;
 
     /**
+     * @var integer
+     */
+    private $index ;
+
+    /**
      * @var string
      */
     private $name ;
@@ -20,6 +25,8 @@ final class SymforceEventBuilder {
      * @var string
      */
     private $parent_name ;
+
+    private $args_builders = array() ;
 
     /**
      * @return string
@@ -34,9 +41,22 @@ final class SymforceEventBuilder {
      */
     public function setId($id)
     {
-        if( null === $this->id ) {
-            $this->id = $id ;
-        }
+        $this->id = $id ;
+    }
+    /**
+     * @return string
+     */
+    public function getIndex()
+    {
+        return $this->index ;
+    }
+
+    /**
+     * @param integer $id
+     */
+    public function setIndex($index)
+    {
+        $this->index = $index ;
     }
 
     /**
@@ -73,5 +93,30 @@ final class SymforceEventBuilder {
         if( null === $this->parent_name ) {
             $this->parent_name = $name ;
         }
+    }
+
+    /**
+     * @param string $name
+     * @return SymforceEventArgsBuilder
+     */
+
+    public function getEventArgumentBuilderByName($name) {
+        return $this->args_builders[$name] ;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasEventArgumentBuilder($name) {
+        return isset( $this->args_builders[$name]) ;
+    }
+
+    public function addEventArgumentBuilder(SymforceEventArgsBuilder $builder){
+        $this->args_builders[ $builder->getName() ] = $builder ;
+    }
+
+    public function getEventArgumentBuilders(){
+        return $this->args_builders ;
     }
 }

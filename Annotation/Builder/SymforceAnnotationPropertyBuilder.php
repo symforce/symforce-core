@@ -7,6 +7,11 @@ final class SymforceAnnotationPropertyBuilder {
     /**
      * @var string
      */
+    private $id ;
+
+    /**
+     * @var string
+     */
     private $annotation_name ;
 
     /**
@@ -18,6 +23,22 @@ final class SymforceAnnotationPropertyBuilder {
      * @var string
      */
     private $type ;
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id ;
+    }
+
+    /**
+     * @param $name
+     */
+    public function setId($id)
+    {
+        $this->id = $id ;
+    }
 
     /**
      * @return string

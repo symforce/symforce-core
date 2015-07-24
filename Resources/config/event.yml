@@ -1,3 +1,0 @@
-services:
-    sf.compiler.event:
-        class: Symforce\CoreBundle\Event\SymforceEventCompiler

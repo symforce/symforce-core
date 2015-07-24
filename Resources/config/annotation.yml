@@ -1,3 +1,0 @@
-services:
-    sf.compiler.annotation :
-        class: Symforce\CoreBundle\Annotation\SymforceAnnotationCompiler

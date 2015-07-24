@@ -7,28 +7,55 @@ final class SymforceAnnotationBuilder {
     /**
      * @var string
      */
+    private $id ;
+
+    /**
+     * @var string
+     */
     private $name ;
 
     /**
      * @var string
      */
-    private $parent_annotation_name ;
+    private $parent_name ;
 
     /**
      * @var string
      */
-    private $annotation_group_name ;
+    private $group_name ;
 
     /**
      * @var string
      */
-    private $annotation_target ;
+    private $target ;
 
-    private $annotation_value_property_name ;
 
-    private $annotation_value_as_key ;
+    private $_value = null ;
 
-    private $annotation_value_not_null ;
+    private $value_property_name ;
+
+    private $value_as_key ;
+
+    private $value_not_null ;
+
+    private $public_properties ;
+    private $properties = array() ;
+
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id ;
+    }
+
+    /**
+     * @param $name
+     */
+    public function setId($id)
+    {
+        $this->id = $id ;
+    }
 
     /**
      * @return string
@@ -43,89 +70,116 @@ final class SymforceAnnotationBuilder {
      */
     public function setName($name)
     {
-        if( null === $this->name ) {
-            $this->name = $name ;
-        }
+        $this->name = $name ;
     }
 
     /**
      * @return string
      */
-    public function getParentAnnotationName() {
-        return $this->parent_annotation_name ;
+    public function getParentName() {
+        return $this->parent_name ;
     }
 
     /**
      * @param string $name
      */
-    public function setParentAnnotationName($name) {
-        if( null === $this->parent_annotation_name ) {
-            $this->parent_annotation_name = $name;
-        }
+    public function setParentName($name) {
+        $this->parent_name = $name;
     }
 
     /**
      * @return string
      */
-    public function getAnnotationGroupName() {
-        return $this->annotation_group_name ;
+    public function getGroupName() {
+        return $this->group_name ;
     }
 
     /**
      * @param string $name
      */
-    public function setAnnotationGroupName($name) {
-        if( null === $this->annotation_group_name ) {
-            $this->annotation_group_name = $name ;
-        }
+    public function setGroupName($name) {
+        $this->group_name = $name ;
     }
 
     /**
      * @return array
      */
-    public function getAnnotationTarget() {
-        if( is_string($this->annotation_target) ) {
-            $this->annotation_target = preg_split('/\W+/', preg_replace('/^\W*|\W*$/', '', $this->annotation_target) ) ;
-        } elseif( !is_array($this->annotation_target) ){
-            $this->annotation_target = null ;
-        }
-        return $this->annotation_target ;
+    public function getTarget() {
+        return $this->target ;
     }
 
-    public function setAnnotationTarget($target)
+    public function setTarget($target)
     {
-        if (null === $this->annotation_target) {
-            $this->annotation_target = $target;
+        if( is_string($target) ) {
+            $this->target = preg_split('/\W+/', preg_replace('/^\W*|\W*$/', '', $target) ) ;
+        } elseif( is_array($this->target) ){
+            $this->target = $target;
         }
     }
 
-    public function setAnnotationValuePropertyName($name) {
-        if( null === $this->annotation_value_property_name ) {
-            $this->annotation_value_property_name = $name ;
+    public function setPublicProperties( $public_properties ) {
+        if( is_array($public_properties) ) {
+            $this->public_properties = $public_properties ;
+        } else {
+            $this->public_properties = preg_split('/\s*,\s*/', trim($public_properties) );
         }
     }
 
-    public function getAnnotationValuePropertyName(){
-        return $this->annotation_value_property_name ;
+    public function getPublicProperties( ){
+        return $this->public_properties ;
     }
 
-    public function setAnnotationValueAsKey($value) {
-        if( null === $this->annotation_value_as_key ) {
-            $this->annotation_value_as_key = $value ;
+    public function getProperties( ){
+        return $this->properties ;
+    }
+
+    public function setValue( $value ) {
+        if( is_string($value) ) {
+            $this->value_property_name = $value ;
+        } else if( is_array($value) ) {
+            if( isset($value['name']) ) {
+                $this->value_property_name = $value['name'] ;
+            }
+            if( isset($value['as_key']) ) {
+                $this->value_as_key = $value['as_key'] ? true: false  ;
+            }
+            if( isset($value['not_null']) ) {
+                $this->value_not_null = $value['not_null'] ? true: false  ;
+            }
         }
+        $this->_value = $value ;
     }
 
-    public function getAnnotationValueAsKey(){
-        return $this->annotation_value_as_key ;
+    public function getValue() {
+        return $this->_value ;
     }
 
-    public function setAnnotationValueNotNull($value) {
-        if( null === $this->annotation_value_not_null ) {
-            $this->annotation_value_not_null = $value ;
-        }
+    public function getValuePropertyName() {
+        return $this->value_property_name ;
     }
 
-    public function getAnnotationValueNotNull(){
-        return $this->annotation_value_not_null ;
+    public function getValueAsKey(){
+        return $this->value_as_key ;
     }
+
+    public function getValueNotNull(){
+        return $this->value_not_null ;
+    }
+
+    public function hasPropertyBuilder($name) {
+        return isset($this->properties[$name]) ;
+    }
+
+    /**
+     * @param $name
+     * @return SymforceAnnotationPropertyBuilder
+     */
+    public function getPropertyBuilderByName($name) {
+        return $this->properties[$name] ;
+    }
+
+    public function addPropertyBuilder(SymforceAnnotationPropertyBuilder $builder) {
+        $this->properties[ $builder->getName() ] = $builder ;
+    }
+
 }

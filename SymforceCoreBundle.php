@@ -36,6 +36,10 @@ class SymforceCoreBundle extends Bundle
         $container->addCompilerPass(new Compiler\AnnotationPass());
         $container->addCompilerPass(new Compiler\AssetsPass());
         $container->addCompilerPass(new Compiler\EventPass());
+        $container->addCompilerPass(new Compiler\PhpHelperPass());
     }
-    
+
+    public function boot(){
+        \Symforce\CoreBundle\Dev\SymforceCoreDev::setContainer($this->container) ;
+    }
 }

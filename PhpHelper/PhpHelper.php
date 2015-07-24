@@ -12,9 +12,18 @@ class PhpHelper {
      */
     static public function findFileByClassName($class_name) {
 
+        static $_psr0_map   = null ;
         static $_psr4_map   = null ;
-        if( null === $_psr4_map ) {
-            $_psr4_file = dirname( (new \ReflectionClass('Composer\\Autoload\\ClassLoader'))->getFileName() ) . '/autoload_psr4.php' ;
+        if( null === $_psr0_map ) {
+            $_psr_dir   = dirname( (new \ReflectionClass('Composer\\Autoload\\ClassLoader'))->getFileName() )  ;
+
+            $_psr0_file = $_psr_dir . '/autoload_namespaces.php' ;
+            if( !file_exists($_psr0_file) ) {
+                throw new \Exception(sprintf("psr0 file(%s) not exits!", $_psr0_file)) ;
+            }
+            $_psr0_map  = include( $_psr0_file ) ;
+
+            $_psr4_file = $_psr_dir . '/autoload_psr4.php' ;
             if( !file_exists($_psr4_file) ) {
                 throw new \Exception(sprintf("psr4 file(%s) not exits!", $_psr4_file)) ;
             }
@@ -22,19 +31,32 @@ class PhpHelper {
         }
 
         $_class_file = null ;
-        $_class_psr4_namespace = null ;
-        foreach($_psr4_map as $_namespace => $_namespace_dir ) if( !empty($_namespace_dir) ) {
+        $_class_psr_namespace = null ;
+
+        foreach($_psr4_map as $_namespace => $_namespace_dir ) if( !empty($_namespace) && !empty($_namespace_dir) ) {
             $_pos = strpos($class_name, $_namespace) ;
             if( 0 === $_pos ) {
-                if( !$_class_psr4_namespace || strlen($_namespace) > strlen($_class_psr4_namespace) ) {
-                    $_class_psr4_namespace  = $_namespace ;
+                if( !$_class_psr_namespace || strlen($_namespace) > strlen($_class_psr_namespace) ) {
+                    $_class_psr_namespace  = $_namespace ;
                     $_class_file = $_namespace_dir[0] . '/' . str_replace('\\', '/', substr($class_name, strlen($_namespace) ) ) . '.php' ;
                 }
             }
         }
+
+        foreach($_psr0_map as $_namespace => $_namespace_dir ) if( !empty($_namespace) && !empty($_namespace_dir) ) {
+            $_pos = strpos($class_name, $_namespace) ;
+            if( 0 === $_pos ) {
+                if( !$_class_psr_namespace || strlen($_namespace) > strlen($_class_psr_namespace) ) {
+                    $_class_psr_namespace  = $_namespace ;
+                    $_class_file = $_namespace_dir[0] . '/' . str_replace('\\', '/', $class_name ) . '.php' ;
+                }
+            }
+        }
+
         if( !$_class_file ) {
             throw new \Exception(sprintf("can not resolve file for class(%s) by psr4 rule!", $class_name ) ) ;
         }
+
         return $_class_file ;
     }
 
