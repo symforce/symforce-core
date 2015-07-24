@@ -224,7 +224,7 @@ class SymforceAnnotationCompiler {
             foreach($_properties as $property_name => $property_builder) {
                 $type = $property_builder->getType() ;
                 if( !$type ) $type = 'string' ;
-                $class->addProperty( $property_name, null, $type,  false, 'public'  );
+                $class->addProperty( $property_name, null, $type, false, true );
             }
 
             if( $_public_properties ) {
@@ -233,7 +233,7 @@ class SymforceAnnotationCompiler {
                         $property_builder = $this->public_properties[ $property_name ] ;
                         $type = $property_builder->getType() ;
                         if( !$type ) $type = 'string' ;
-                        $class->addProperty( $property_name, null, $type,  false, 'public' ) ;
+                        $class->addProperty( $property_name, null, $type, false, true ) ;
                     }
                 }
             }

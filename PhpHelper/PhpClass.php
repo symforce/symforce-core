@@ -96,7 +96,7 @@ class PhpClass extends \CG\Generator\PhpClass {
         $property
                 ->setClass( $this )
                 ->setDocblock('/** @var ' . $type . ' */')
-                ->setVisibility( $visible ? 'protected': 'public' )
+                ->setVisibility( $visible ? 'public' : 'protected' )
                 ->setDefaultValue($value)
                 ->useGetter( $_get )
                 ->setLazy( $_lazy )
@@ -258,7 +258,7 @@ class PhpClass extends \CG\Generator\PhpClass {
 
         $_class_dir  = dirname($_class_file) ;
         if( !file_exists( $_class_dir) ) {
-            if( !@mkdir( $_class_dir, 0755) ) {
+            if( !@mkdir( $_class_dir, 0755, true) ) {
                 throw new \Exception( sprintf("mkdir(%s) error!", $_class_dir));
             }
         }

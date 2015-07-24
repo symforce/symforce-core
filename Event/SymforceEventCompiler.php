@@ -155,7 +155,7 @@ class SymforceEventCompiler {
             foreach( $class_builder->getEventArgumentBuilders() as $property_name => $property_builder) {
                 $type = $property_builder->getType() ;
                 if( !$type ) $type = 'string' ;
-                $class->addProperty( $property_name, null, $type,  false, 'public' );
+                $class->addProperty( $property_name, null, $type,  false, true );
             }
 
             $class->writeCache() ;

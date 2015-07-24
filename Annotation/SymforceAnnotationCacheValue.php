@@ -29,9 +29,13 @@ class SymforceAnnotationCacheValue {
         $value_property_name = $annotation::SYMFORCE_ANNOTATION_VALUE_PROPERTY ;
 
         if( $value_property_name ) {
+            $_rc     = new \ReflectionClass( $annotation ) ;
+            if( !$_rc->hasProperty($value_property_name) ) {
+                throw new \Exception ;
+            }
             $value_property_as_key = $annotation::SYMFORCE_ANNOTATION_VALUE_AS_KEY ;
             $value_property_not_null = $annotation::SYMFORCE_ANNOTATION_VALUE_NOT_NULL ;
-            $value_property_value = $annotation->$value_property_name ;
+            $value_property_value = $_rc->getProperty($value_property_name)->getValue($annotation) ;
 
             if( !$value_property_value ) {
                 if( $value_property_not_null ) {

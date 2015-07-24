@@ -57,8 +57,8 @@ abstract class SymforceCoreDev {
             $env_name   = self::$_container->getParameter('kernel.environment');
             $_dir	= sprintf('%s/logs/%s/',$root_dir, $env_name ) ;
             if( !file_exists($_dir) || !is_dir($_dir) ) {
-                if( !@mkdir( $_dir, 0755 )  ) {
-                    throw new Exception( sprintf('mkdir `%s` error!', $_dir ) ) ;
+                if( !@mkdir( $_dir, 0755, true)  ) {
+                    throw new Exception( sprintf('mkdir(%s) error!', $_dir ) ) ;
                 }
             }
             $_file	= preg_replace_callback('/\W+/', function($m){
@@ -70,7 +70,9 @@ abstract class SymforceCoreDev {
             if( substr_count($_file, '/') > 0 ) {
                 $dir_name	= dirname( $_file ) ;
                 $_full_path	= $_dir . $dir_name ;
-                self::mkdir($_full_path) ;
+                if( !@mkdir( $_full_path, 0755, true) ) {
+                    throw new \Exception( sprintf("mkdir(%s) error!", $_full_path));
+                }
             }
 
             $_full_path	= $_dir . $_file . '.log' ;
