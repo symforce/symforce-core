@@ -8,6 +8,11 @@ class PhpClass extends \CG\Generator\PhpClass {
      * @var \Symforce\CoreBundle\PhpHelper\PhpWriter
      */
     protected $lazy_writer ;
+
+    /**
+     * @var \Symforce\CoreBundle\PhpHelper\PhpMethod
+     */
+    protected $lazy_method ;
     
     protected $lazy_properties  = array() ;
     protected $_traits = array() ;
@@ -72,9 +77,8 @@ class PhpClass extends \CG\Generator\PhpClass {
      */
     public function getLazyWriter() {
         if( null === $this->lazy_writer ) {
-            $method = $this->addMethod('__wakeup') ; 
-            $this->lazy_writer  = $method->getWriter() ;
-            
+            $this->lazy_method  = $this->addMethod('__lazyInit') ;
+            $this->lazy_writer  = $this->lazy_method->getWriter() ;
         }
         return $this->lazy_writer  ;
     }
@@ -183,9 +187,8 @@ class PhpClass extends \CG\Generator\PhpClass {
         }
         
         if( $this->lazy_writer ) {
-            $_wakeup_method   = $this->getMethod('__wakeup') ;
-            $this->lazy_writer->writeln(  $_wakeup_method->getBody() ) ;
-            $_wakeup_method->setBody( $this->lazy_writer->getContent() ) ;
+            $this->lazy_writer->writeln( $this->lazy_method->getBody() ) ;
+            $this->lazy_method->setBody( $this->lazy_writer->getContent() ) ;
         }
 
         /**
@@ -270,5 +273,14 @@ class PhpClass extends \CG\Generator\PhpClass {
         return $_class_file ;
     }
 
+    public function propertyEncode( $object ){
+        if(is_object($object)) {
+            throw new \Exception('can not encode object') ;
+        } else if( is_array( $object) ) {
+            return var_export($object, 1) ;
+        } else {
+            return json_encode($object) ;
+        }
+    }
 
 }

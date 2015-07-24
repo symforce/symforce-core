@@ -137,7 +137,7 @@ class PhpHelper {
 
     static public function compilePropertyValue( $object ) {
         if(is_object($object)) {
-            throw new \Exception('can not encode object') ;
+            return sprintf('unserialize(%s)', var_export(serialize($object), 1) ) ;
         } else if( is_array( $object) ) {
             return var_export($object, 1) ;
         } else {

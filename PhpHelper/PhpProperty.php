@@ -100,7 +100,7 @@ class PhpProperty extends \CG\Generator\PhpProperty {
         
         $default_value  = $this->getDefaultValue() ;
         if( $this->_lazy ) {
-            $this->_class->getLazyWriter()->writeln( '$this->' . $this->getName() . ' = ' .  $this->_class->propertyEncode( $default_value )  . ' ; ' ) ;
+            $this->_class->getLazyWriter()->writeln( '$this->' . $this->getName() . ' = ' . PhpHelper::compilePropertyValue( $default_value )  . ' ; ' ) ;
             $default_value  = null ;
         }
 
