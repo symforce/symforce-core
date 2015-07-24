@@ -10,8 +10,9 @@ class PhpMethod extends \CG\Generator\PhpMethod {
     protected $_writer ;
     
     protected $_lazy_code ;
-    
+
     protected $_lazy_parent ;
+    protected $_lazy_parent_return ;
 
 
     /**
@@ -29,7 +30,8 @@ class PhpMethod extends \CG\Generator\PhpMethod {
      * @return \Symforce\CoreBundle\PhpHelper\PhpMethod
      */
     public function useLazyParent( $value = true ) {
-        $this->_lazy_parent = !! $value ;
+        $this->_lazy_parent = true ;
+        $this->_lazy_parent_return  = !! $value ;
         return $this ;
     }
     
@@ -66,6 +68,9 @@ class PhpMethod extends \CG\Generator\PhpMethod {
             $_ps[]  = '$' . $p->getName() ;
         }
         $code   = 'parent::' . $this->getName() . '(' . join(', ', $_ps). ');' ;
+        if( $this->_lazy_parent_return ) {
+            $this->_writer->write('return ') ;
+        }
         $this->_writer->writeln($code) ;
     }
 }

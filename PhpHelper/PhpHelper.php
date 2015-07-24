@@ -152,6 +152,12 @@ class PhpHelper {
         }, $string ) ;
     }
 
+    static public function deCamelize($string){
+        return ltrim(preg_replace_callback('/[A-Z]/', function ($match) {
+            return '_' . strtolower($match[0]) ;
+        }, $string ), '_' ) ;
+    }
+
     static public function humanize($text)
     {
         return ucfirst(trim(strtolower(preg_replace(array('/([A-Z])/', '/[_\s]+/'), array('_$1', ' '), $text))));

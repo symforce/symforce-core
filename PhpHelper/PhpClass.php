@@ -22,11 +22,11 @@ class PhpClass extends \CG\Generator\PhpClass {
      * @param string $name
      * @return \Symforce\CoreBundle\PhpHelper\PhpMethod
      */
-    public function addMethod( $name ) {
+    public function addMethod( $name , $visible = false) {
         $method  = new PhpMethod($name) ;
         $method
                 ->setFinal(true)
-                ->setVisibility('protected')
+                ->setVisibility( $visible ? 'public' : 'protected' )
                 ;
         $this->setMethod( $method ) ;
         return $method ;
@@ -50,18 +50,19 @@ class PhpClass extends \CG\Generator\PhpClass {
      * @param mixed $value
      * @return \Symforce\CoreBundle\PhpHelper\PhpClass
      */
-    public function addLazyArray($name, $key, $value ) {
-        if( !isset($this->lazy_properties[$name]) ) {
-            $this->lazy_properties[$name]   = array() ;
+    public function addLazyArray($name, $key, $value = null, $visible = false ) {
+        $_visible = $visible ? 'public' : 'protected' ;
+        if( !isset($this->lazy_properties[$_visible][$name]) ) {
+            $this->lazy_properties[$_visible][$name]   = array() ;
         }
-        if( isset($this->lazy_properties[$name][ $key ]) ) {
-            if( is_array($this->lazy_properties[$name][ $key ]) && is_array($value) ) {
-                $this->lazy_properties[$name][ $key ]  = array_merge( $this->lazy_properties[$name][ $key ] , $value  ) ;
+        if( isset($this->lazy_properties[$_visible][$name][ $key ]) ) {
+            if( is_array($this->lazy_properties[$_visible][$name][ $key ]) && is_array($value) ) {
+                $this->lazy_properties[$_visible][$name][ $key ]  = array_merge( $this->lazy_properties[$_visible][$name][ $key ] , $value  ) ;
             } else {
                 throw new \Exception( sprintf( 'overwride lazy property for %s->%s[%s] ', $this->getName(), $name, $key ) );
             }
         } else {
-            $this->lazy_properties[$name][ $key ]   = $value ;
+            $this->lazy_properties[$_visible][$name][ $key ]   = $value ;
         }
         return $this ;
     }
@@ -87,7 +88,7 @@ class PhpClass extends \CG\Generator\PhpClass {
      * @param bool $_lazy
      * @return \Symforce\CoreBundle\PhpHelper\PhpProperty
      */
-    public function addProperty($name, $value, $type = null , $_get = false, $visibility = 'protected', $_lazy = false ) {
+    public function addProperty($name, $value, $type = null , $_get = false, $visible = false, $_lazy = false ) {
         $property   = new PhpProperty($name) ;
         if( null === $type ) {
             $type   = is_object( $value ) ? get_class( $value ) : gettype( $value ) ;
@@ -95,7 +96,7 @@ class PhpClass extends \CG\Generator\PhpClass {
         $property
                 ->setClass( $this )
                 ->setDocblock('/** @var ' . $type . ' */')
-                ->setVisibility($visibility)
+                ->setVisibility( $visible ? 'protected': 'public' )
                 ->setDefaultValue($value)
                 ->useGetter( $_get )
                 ->setLazy( $_lazy )
@@ -172,8 +173,10 @@ class PhpClass extends \CG\Generator\PhpClass {
             $property->writeCache($writer) ;
         }
         
-        foreach($this->lazy_properties as $name => $value ) {
-            $writer->writeln("\npublic \${$name} = " . PhpHelper::compilePropertyValue($value)  . " ;") ;
+        foreach($this->lazy_properties as $visible => $visible_values ) {
+            foreach($visible_values as $name => $value ) {
+                $writer->writeln( sprintf("\n%s $%s = %s ;", $visible, $name, PhpHelper::compilePropertyValue($value) )) ;
+            }
         }
         
         if( $this->lazy_writer ) {
@@ -207,10 +210,11 @@ class PhpClass extends \CG\Generator\PhpClass {
                     ->write( $method->getName() ) 
                     ;
             $ps = $method->getParameters()  ;
+
             if( empty($ps) ) {
                 $writer->write('()') ;
             } else {
-                $writer->writeln('(')->indent();
+                $writer->write('(');
                 foreach( $method->getParameters() as $i => $p) {
                     if( $p->getType() ) {
                         if( in_array( $p->getType(), array('mixed') ) ) {
@@ -230,19 +234,17 @@ class PhpClass extends \CG\Generator\PhpClass {
                         $writer->write(' = ' .  json_encode( $p->getDefaultValue() ) ) ;
                     }
                     if( $i < count($ps) - 1 ) {
-                        $writer->writeln(",");
-                    } else {
-                        $writer->write("\n");
+                        $writer->write(", ");
                     }
                 }
                 
-                $writer->writeln(')')->outdent();
+                $writer->write(')');
             }
             
             $writer
                     ->writeln( '{' )
                         ->indent()
-                        ->writeln( $_body )
+                        ->write( $_body )
                         ->outdent()
                     ->writeln("}")
                     ;
