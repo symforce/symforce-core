@@ -15,7 +15,7 @@ final class SymforceCoreDevCompiler {
         $ok = false ;
         if( isset($attributes['trait']) ) {
             if( !trait_exists($attributes['trait']) ) {
-                throw new \Exception( sprintf("service(%s, tags:{name:%s, trait:%s}) trait not exists!", $id, self::_TAG_NAME, var_export($attributes['trait'], 1) ) ) ;
+                throw new \Exception( sprintf("service(%s, tags:{name:%s, trait:%s}) trait not exists!", $id, self::TAG_NAME, var_export($attributes['trait'], 1) ) ) ;
             }
             $this->traits[] = $attributes['trait'] ;
             $ok = true ;
@@ -27,7 +27,7 @@ final class SymforceCoreDevCompiler {
         }
 
         if( !$ok ){
-            throw new \Exception( sprintf("service(%s, tags:{name:%s}) require trait or compile", $id, self::_TAG_NAME ) ) ;
+            throw new \Exception( sprintf("service(%s, tags:{name:%s}) require trait or compile", $id, self::TAG_NAME ) ) ;
         }
     }
 

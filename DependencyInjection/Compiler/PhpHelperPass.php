@@ -18,10 +18,8 @@ class PhpHelperPass implements CompilerPassInterface
             if (isset($attributes[0])) {
                 $attributes = $attributes[0];
             }
-
             $compiler->addDevBuilder($id, $attributes);
         }
-
         $compiler->compile( $container->getParameter('kernel.root_dir')) ;
 
     }

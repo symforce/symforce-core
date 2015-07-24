@@ -159,6 +159,9 @@ class PhpClass extends \CG\Generator\PhpClass {
         ;
 
         foreach($this->_traits as $_trait) {
+            if( !trait_exists($_trait) ) {
+                throw new \Exception ;
+            }
             $writer->writeln(' use \\' . ltrim($_trait, '\\') . ';' ) ;
         }
 
