@@ -100,14 +100,14 @@ class PhpHelper {
     }
 
     static public function isClassName( $name ) {
-        if( self::isKeywords($name) || self::isBaseType($name) ) {
+        if( self::isKeywords( strtolower($name) ) || self::isBaseType($name) ) {
             return false ;
         }
         return self::isIdentifier($name) ;
     }
 
     static public function isIdentifier( $id ) {
-        return preg_match('/^[a-z][a-z0-9\_]*[a-z0-9]$/', $id) ;
+        return preg_match('/^[a-z][a-z0-9\_]*[a-z0-9]$/i', $id) ;
     }
 
     static public function write_file($path, $content ) {

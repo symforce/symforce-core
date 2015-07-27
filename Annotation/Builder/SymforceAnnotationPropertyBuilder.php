@@ -69,11 +69,9 @@ final class SymforceAnnotationPropertyBuilder {
     /**
      * @param string $name
      */
-    public function seType( $type )
+    public function setType( $type )
     {
-        if( null === $this->type ) {
-            $this->type = $type ;
-        }
+        $this->type = $type ;
     }
 
     /**
@@ -87,9 +85,7 @@ final class SymforceAnnotationPropertyBuilder {
      * @param string $name
      */
     public function setAnnotationName( $name ){
-         if( null ===  $this->annotation_name ) {
-             $this->annotation_name = $name ;
-         }
+        $this->annotation_name = $name ;
     }
 
 }

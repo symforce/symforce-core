@@ -8,6 +8,7 @@ abstract class SymforceAbstractAnnotation
 
     const SYMFORCE_ANNOTATION_NAME = 0 ;
     const SYMFORCE_ANNOTATION_GROUP_NAME = 0 ;
+
     const SYMFORCE_ANNOTATION_VALUE_PROPERTY = 0 ;
     const SYMFORCE_ANNOTATION_VALUE_AS_KEY = 0 ;
     const SYMFORCE_ANNOTATION_VALUE_NOT_NULL = 0 ;

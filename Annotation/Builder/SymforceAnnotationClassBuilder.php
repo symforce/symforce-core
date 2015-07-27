@@ -2,7 +2,7 @@
 
 namespace Symforce\CoreBundle\Annotation\Builder ;
 
-final class SymforceAnnotationBuilder {
+final class SymforceAnnotationClassBuilder {
 
     /**
      * @var string
@@ -13,6 +13,11 @@ final class SymforceAnnotationBuilder {
      * @var string
      */
     private $name ;
+
+    /**
+     * @var string
+     */
+    private $camelize_name ;
 
     /**
      * @var string
@@ -28,9 +33,6 @@ final class SymforceAnnotationBuilder {
      * @var string
      */
     private $target ;
-
-
-    private $_value = null ;
 
     private $value_property_name ;
 
@@ -71,6 +73,14 @@ final class SymforceAnnotationBuilder {
     public function setName($name)
     {
         $this->name = $name ;
+    }
+
+    public function getCamelizeName(){
+        return $this->camelize_name ;
+    }
+
+    public function setCamelizeName($name){
+        $this->camelize_name = $name ;
     }
 
     /**
@@ -118,11 +128,22 @@ final class SymforceAnnotationBuilder {
     }
 
     public function setPublicProperties( $public_properties ) {
-        if( is_array($public_properties) ) {
-            $this->public_properties = $public_properties ;
-        } else {
-            $this->public_properties = preg_split('/\s*,\s*/', trim($public_properties) );
+        if( !is_array($public_properties) ) {
+            $public_properties = preg_split('/\s*,\s*/', trim($public_properties) );
         }
+        $properties = array() ;
+        $this->public_properties = array() ;
+        foreach($public_properties as $_property) {
+            $pos = strpos($_property, ':') ;
+            if( false === $pos ) {
+                $this->public_properties[] = $_property ;
+            } else {
+                $_property_name = substr($_property, 0, $pos) ;
+                $_property_type = substr($_property, $pos + 1 ) ;
+                $properties[ $_property_name ] = $_property_type ;
+            }
+        }
+        return $properties ;
     }
 
     public function getPublicProperties( ){
@@ -133,37 +154,28 @@ final class SymforceAnnotationBuilder {
         return $this->properties ;
     }
 
-    public function setValue( $value ) {
-        if( is_string($value) ) {
-            $this->value_property_name = $value ;
-        } else if( is_array($value) ) {
-            if( isset($value['name']) ) {
-                $this->value_property_name = $value['name'] ;
-            }
-            if( isset($value['as_key']) ) {
-                $this->value_as_key = $value['as_key'] ? true: false  ;
-            }
-            if( isset($value['not_null']) ) {
-                $this->value_not_null = $value['not_null'] ? true: false  ;
-            }
-        }
-        $this->_value = $value ;
-    }
-
-    public function getValue() {
-        return $this->_value ;
-    }
-
     public function getValuePropertyName() {
         return $this->value_property_name ;
+    }
+
+    public function setValuePropertyName( $name ) {
+        $this->value_property_name = $name ;
     }
 
     public function getValueAsKey(){
         return $this->value_as_key ;
     }
 
+    public function setValueAsKey( $value ){
+        $this->value_as_key = $value ? true : false ;
+    }
+
     public function getValueNotNull(){
         return $this->value_not_null ;
+    }
+
+    public function setValueNotNull($value){
+        $this->value_not_null = $value ? true : false ;
     }
 
     public function hasPropertyBuilder($name) {

@@ -14,14 +14,24 @@ class SymforceAnnotationCache implements \Serializable {
     const ANNOTATION_VALUE_NOT_NULL = 'SYMFORCE_ANNOTATION_VALUE_NOT_NULL' ;
 
 
-    public  $class_name ;
-    public  $class_annotations = array() ;
-    public  $properties_annotations = array() ;
-    public  $other_annotations = array() ;
+    /**
+     * @var string
+     */
+    public  $name ;
+    /**
+     * @var \ReflectionClass
+     */
+    public  $reflection ;
+
+    protected  $class_annotations = array() ;
+    protected  $properties_annotations = array() ;
+    protected  $other_annotations = array() ;
 
     public function __construct(Reader $reader, \ReflectionClass $reflect, array & $cached_namespace ) {
+
         $class_name = $reflect->getName() ;
-        $this->class_name   = $class_name ;
+        $this->name   = $class_name ;
+        $this->reflection = $reflect ;
 
         $this->addAnnotation($reflect, $cached_namespace, $reader->getClassAnnotations($reflect) ) ;
 
@@ -40,7 +50,59 @@ class SymforceAnnotationCache implements \Serializable {
                 unset( $this->properties_annotations[ $property_name ] ) ;
             }
         }
+    }
 
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasClassValue($name ){
+        return isset($this->class_annotations[$name]) ;
+    }
+
+    /**
+     * @param string $name
+     * @return \Symforce\CoreBundle\Annotation\SymforceAbstractAnnotation|array
+     * @throws \Exception
+     */
+    protected function getClassValue($name, $fetch_values = false ){
+        if( !isset($this->class_annotations[$name]) ) {
+            throw new \Exception ;
+        }
+        if( $fetch_values ) {
+            return $this->class_annotations[$name]->values ;
+        }
+        return $this->class_annotations[$name]->value ;
+    }
+
+
+    /**
+     * @param string $property_name
+     * @param string $name
+     * @return bool
+     */
+    public function hasPropertyValue($property_name, $name){
+        return isset($this->properties_annotations[$property_name][$name]) ;
+    }
+
+
+    /**
+     * @param $property_name
+     * @param $name
+     * @return \Symforce\CoreBundle\Annotation\SymforceAbstractAnnotation|array
+     * @throws \Exception
+     */
+    protected function getPropertyValue($property_name, $name, $fetch_values = false){
+        if( !$this->reflection->hasProperty($property_name) ) {
+            throw new  \Exception( sprintf("class property(%s->%s) not exists in file: %s ", $this->name, $property_name, $this->reflection->getFileName() ));
+        }
+        if( !isset($this->properties_annotations[$property_name][$name]) ) {
+            throw new \Exception ;
+        }
+        if( $fetch_values ) {
+            $this->properties_annotations[$property_name][$name]->values ;
+        }
+        return $this->properties_annotations[$property_name][$name]->value ;
     }
 
     private function addAnnotation(\ReflectionClass $reflect, array & $cached_namespace, array $annotations , $property_name = null ) {
@@ -103,6 +165,7 @@ class SymforceAnnotationCache implements \Serializable {
     public function unserialize($data) {
         $_data = unserialize($data) ;
         $this->class_name = $_data[0] ;
+        $this->class_reflection = new \ReflectionClass( $this->class_name ) ;
         $this->other_annotations = $_data[1] ;
 
         $reflect = new \ReflectionClass($this->class_name) ;
