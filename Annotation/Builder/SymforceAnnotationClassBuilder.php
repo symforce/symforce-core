@@ -27,7 +27,7 @@ final class SymforceAnnotationClassBuilder {
     /**
      * @var string
      */
-    private $group_name ;
+    private $group_id ;
 
     /**
      * @var string
@@ -100,15 +100,15 @@ final class SymforceAnnotationClassBuilder {
     /**
      * @return string
      */
-    public function getGroupName() {
-        return $this->group_name ;
+    public function getGroupId() {
+        return $this->group_id ;
     }
 
     /**
      * @param string $name
      */
-    public function setGroupName($name) {
-        $this->group_name = $name ;
+    public function setGroupId($id) {
+        $this->group_id = $id ;
     }
 
     /**

@@ -95,14 +95,14 @@ EOT
          */
         foreach($compiler->getResources() as $service_id => $assets_resource ) {
             if( !in_array( $assets_resource->getTarget(), $assets_target_dirs) ) {
-                throw new \Exception( sprintf("service(%s) with tags(name=%s, target=%s) target must be one of(%s)", $service_id, $factory->getTagName(), $assets_resource->getTarget(), join(',', $assets_target_dirs)));
+                throw new \Exception( sprintf("service(%s) with tags(name=%s, target=%s) target must be one of(%s)", $service_id, $compiler->getTagName(), $assets_resource->getTarget(), join(',', $assets_target_dirs)));
             }
             $path = $assets_resource->getPath() ;
 
             try{
                 $_path = $twig_locator->locate( $twig_parser->parse( $path ) ) ;
             } catch(\InvalidArgumentException $e) {
-                throw new \Exception( sprintf("service(%s) with tags(name=%s, path=%s): %s", $service_id, $factory->getTagName(), $path, $e->getMessage() ));
+                throw new \Exception( sprintf("service(%s) with tags(name=%s, path=%s): %s", $service_id, $compiler->getTagName(), $path, $e->getMessage() ));
             }
             $_target_dir = $assets_root_dir . '/' . $assets_resource->getTarget() ;
             $this->ensureDirectoryExists( $_target_dir ) ;

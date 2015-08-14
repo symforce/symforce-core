@@ -5,6 +5,7 @@ namespace Symforce\CoreBundle\Annotation ;
 use Symfony\Component\DependencyInjection\ContainerInterface ;
 
 use Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationTypeBuilder ;
+use Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationTreeBuilder ;
 use Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationClassBuilder ;
 use Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationPropertyBuilder  ;
 
@@ -13,13 +14,14 @@ use Symforce\CoreBundle\PhpHelper\PhpHelper ;
 class SymforceAnnotationCompiler {
 
     const TYPE_TAG_NAME  = 'sf.annotation.type_builder' ;
+    const TREE_TAG_NAME  = 'sf.annotation.tree_builder' ;
     const CLASS_TAG_NAME  = 'sf.annotation.class_builder' ;
     const PROPERTY_TAG_NAME  = 'sf.annotation.property_builder' ;
 
     private $_bootstrap = false ;
     private $_classNameCache = array() ;
 
-    private $_ignore_name_list  = array('compiler', 'builder', 'annotation') ;
+    private $_ignore_name_list  = array('compiler', 'annotation') ;
     private $_default_property_types    = array('bool', 'integer', 'string', 'array', 'mixed')  ;
 
 
@@ -43,6 +45,7 @@ class SymforceAnnotationCompiler {
         return $this->type_builders[$name] ;
     }
 
+
     public function addAnnotationTypeCompiler($id, array & $attributes) {
         if (!isset($attributes['alias']) ) {
             throw new \Exception( sprintf("service(%s, tags:{name: %s}) require tag alias", $id, self::TYPE_TAG_NAME) ) ;
@@ -65,8 +68,15 @@ class SymforceAnnotationCompiler {
         $builder->setCamelizeName($camelize_name);
         $this->type_builders[$name] = $builder ;
 
-        if ( isset($attributes['parent']) ) {
-            $builder->setParentName($attributes['parent']);
+        if ( !isset($attributes['class']) ) {
+            throw new \Exception(sprintf("service(%s, tags:{name: %s, alias: %s}) require tag class", $id, self::TYPE_TAG_NAME, $name) ) ;
+        }
+
+        if ( isset($attributes['class']) ) {
+            if( !class_exists($attributes['class']) ){
+                throw new \Exception(sprintf("service(%s, tags:{name: %s, alias: %s, class: %s}) tag class is not a valid php class name", $id, self::TYPE_TAG_NAME, $name, $attributes['class'] ) ) ;
+            }
+            $builder->setClassName($attributes['class']);
         }
 
     }
@@ -94,7 +104,7 @@ class SymforceAnnotationCompiler {
             $builder->setParentName($attributes['parent']);
         }
         if (isset($attributes['group'])) {
-            $builder->setGroupName($attributes['group']);
+            $builder->setGroupId( (int) $attributes['group'] );
         }
         if (isset($attributes['target'])) {
             $builder->setTarget($attributes['target']);
@@ -260,24 +270,24 @@ class SymforceAnnotationCompiler {
                 $class->setParentClassName($base_parent_class) ;
             }
 
-            $class->setConstant( SymforceAnnotationCache::ANNOTATION_NAME, $annotation_name) ;
+            $class->setConstant( 'SYMFORCE_ANNOTATION_NAME', $annotation_name) ;
 
-            $group_name = $class_builder->getGroupName() ;
-            if( $group_name ) {
-                $class->setConstant( SymforceAnnotationCache::ANNOTATION_GROUP_NAME, $group_name) ;
+            $group_id = $class_builder->getGroupId() ;
+            if( null !== $group_id ) {
+                $class->setConstant( 'SYMFORCE_ANNOTATION_GROUP_ID', $group_id) ;
             }
 
             $value_property_name = $class_builder->getValuePropertyName() ;
             if( $value_property_name ) {
-                $class->setConstant( SymforceAnnotationCache::ANNOTATION_VALUE_NAME, $value_property_name) ;
+                $class->setConstant('SYMFORCE_ANNOTATION_VALUE_AS_PROPERTY', $value_property_name) ;
             }
 
             if( $class_builder->getValueAsKey() ) {
-                $class->setConstant( SymforceAnnotationCache::ANNOTATION_VALUE_AS_KEY, 1 ) ;
+                $class->setConstant('SYMFORCE_ANNOTATION_VALUE_AS_KEY', 1 ) ;
             }
 
             if( $class_builder->getValueNotNull() ) {
-                $class->setConstant( SymforceAnnotationCache::ANNOTATION_VALUE_NOT_NULL, 1 ) ;
+                $class->setConstant('SYMFORCE_ANNOTATION_VALUE_NOT_NULL', 1 ) ;
             }
 
             $doc    = sprintf(" * @Annotation") ;

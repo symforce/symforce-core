@@ -22,8 +22,12 @@ class SymforceAnnotationTypeBuilder {
     /**
      * @var string
      */
-    private $parent_name ;
+    private $class_name ;
 
+    /**
+     * @var \ReflectionClass
+     */
+    public $reflection ;
 
     /**
      * @return string
@@ -68,15 +72,16 @@ class SymforceAnnotationTypeBuilder {
     /**
      * @return string
      */
-    public function getParentName() {
-        return $this->parent_name ;
+    public function getClassName() {
+        return $this->class_name ;
     }
 
     /**
      * @param string $name
      */
-    public function setParentName($name) {
-        $this->parent_name = $name;
+    public function setClassName($name) {
+        $this->reflection = new \Reflection($name) ;
+        $this->class_name = $name;
     }
 
 }

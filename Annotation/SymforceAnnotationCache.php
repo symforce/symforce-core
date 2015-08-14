@@ -7,13 +7,6 @@ use Symforce\CoreBundle\PhpHelper\PhpHelper ;
 
 class SymforceAnnotationCache implements \Serializable {
 
-    const ANNOTATION_NAME = 'SYMFORCE_ANNOTATION_NAME' ;
-    const ANNOTATION_GROUP_NAME = 'SYMFORCE_ANNOTATION_GROUP_NAME' ;
-    const ANNOTATION_VALUE_NAME = 'SYMFORCE_ANNOTATION_VALUE_PROPERTY' ;
-    const ANNOTATION_VALUE_AS_KEY = 'SYMFORCE_ANNOTATION_VALUE_AS_KEY' ;
-    const ANNOTATION_VALUE_NOT_NULL = 'SYMFORCE_ANNOTATION_VALUE_NOT_NULL' ;
-
-
     /**
      * @var string
      */
@@ -23,9 +16,9 @@ class SymforceAnnotationCache implements \Serializable {
      */
     public  $reflection ;
 
-    protected  $class_annotations = array() ;
-    protected  $properties_annotations = array() ;
-    protected  $other_annotations = array() ;
+    protected $class_annotations = array() ;
+    protected $properties_annotations = array() ;
+    protected $other_annotations = array() ;
 
     public function __construct(Reader $reader, \ReflectionClass $reflect, array & $cached_namespace ) {
 
@@ -52,6 +45,10 @@ class SymforceAnnotationCache implements \Serializable {
         }
     }
 
+    public function getName(){
+        return $this->name ;
+    }
+
     /**
      * @param string $name
      * @return bool
@@ -65,7 +62,7 @@ class SymforceAnnotationCache implements \Serializable {
      * @return \Symforce\CoreBundle\Annotation\SymforceAbstractAnnotation|array
      * @throws \Exception
      */
-    protected function getClassValue($name, $fetch_values = false ){
+    public function getClassValue($name, $fetch_values = false ){
         if( !isset($this->class_annotations[$name]) ) {
             throw new \Exception ;
         }
@@ -92,7 +89,7 @@ class SymforceAnnotationCache implements \Serializable {
      * @return \Symforce\CoreBundle\Annotation\SymforceAbstractAnnotation|array
      * @throws \Exception
      */
-    protected function getPropertyValue($property_name, $name, $fetch_values = false){
+    public function getPropertyValue($property_name, $name, $fetch_values = false){
         if( !$this->reflection->hasProperty($property_name) ) {
             throw new  \Exception( sprintf("class property(%s->%s) not exists in file: %s ", $this->name, $property_name, $this->reflection->getFileName() ));
         }

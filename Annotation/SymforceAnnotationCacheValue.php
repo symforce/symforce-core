@@ -26,7 +26,7 @@ class SymforceAnnotationCacheValue {
         $this->property_name = $property_name ;
         $this->annotation_name = $annotation::SYMFORCE_ANNOTATION_NAME ;
 
-        $value_property_name = $annotation::SYMFORCE_ANNOTATION_VALUE_PROPERTY ;
+        $value_property_name = $annotation::SYMFORCE_ANNOTATION_VALUE_AS_PROPERTY ;
 
         if( $value_property_name ) {
             $_rc     = new \ReflectionClass( $annotation ) ;
@@ -80,7 +80,7 @@ class SymforceAnnotationCacheValue {
 
     public function addAnnotation(SymforceAbstractAnnotation $annotation){
 
-        $value_property_name = $annotation::SYMFORCE_ANNOTATION_VALUE_PROPERTY ;
+        $value_property_name = $annotation::SYMFORCE_ANNOTATION_VALUE_AS_PROPERTY ;
 
         if( $value_property_name ) {
             $value_property_as_key = $annotation::SYMFORCE_ANNOTATION_VALUE_AS_KEY ;

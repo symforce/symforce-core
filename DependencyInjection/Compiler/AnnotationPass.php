@@ -13,6 +13,7 @@ class AnnotationPass implements CompilerPassInterface
     {
 
         $compiler = new \Symforce\CoreBundle\Annotation\SymforceAnnotationCompiler();
+
         foreach ($container->findTaggedServiceIds($compiler::TYPE_TAG_NAME) as $id => $attributes) {
             if (isset($attributes[0])) {
                 $attributes = $attributes[0];
