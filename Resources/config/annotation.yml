@@ -1,0 +1,20 @@
+parameters:
+    sf.annotation.cached_namespace:
+        - Doctrine\ORM\Mapping
+
+services:
+    # type annotation
+    sf.annotation.class.builder:
+        class:  Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationPropertyBuilder
+        tags:
+            - { name: "sf.annotation.class_builder", alias: "builder", target: "CLASS", group: 0  }
+
+    sf.annotation.class.builder_property:
+        class:  Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationPropertyBuilder
+        tags:
+            - { name: "sf.annotation.class_builder", alias: "property", target: "PROPERTY", group: 0  }
+
+    sf.annotation.class.builder_method:
+        class:  Symforce\CoreBundle\Annotation\Builder\SymforceAnnotationPropertyBuilder
+        tags:
+            - { name: "sf.annotation.class_builder", alias: "method", target: "METHOD", group: 0  }
